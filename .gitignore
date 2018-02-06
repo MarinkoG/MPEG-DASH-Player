@@ -2,6 +2,10 @@
 .metadata/
 RemoteSystemsTempFiles/
 .settings/
+.vs
+DASH-Player/win32/
+DASH-Player/DASH-Player/GeneratedFiles/
+DASH-Player/DASH-Player/Release/
 
 # Prerequisites
 *.d
