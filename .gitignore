@@ -39,3 +39,5 @@ DASH-Player/DASH-Player/Release/
 *.exe
 *.out
 *.app
+*.pdb
+*.ilk
