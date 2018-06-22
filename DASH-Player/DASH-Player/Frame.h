@@ -1,8 +1,10 @@
 #pragma once
 #include <qlabel.h>
+#include <qpainter.h>
+
 class Frame : public QLabel
 {
-	QPixmap frame;
+
 public:
 	Frame(QWidget *parent = NULL);
 	~Frame();
@@ -10,5 +12,7 @@ public:
 
 protected:
 	void paintEvent(QPaintEvent *paintEvent);
-};
 
+private:
+	QPixmap frame;
+};

@@ -1,5 +1,4 @@
 #include "Frame.h"
-#include <qpainter.h>
 
 Frame::Frame(QWidget *parent) :QLabel(parent)
 {

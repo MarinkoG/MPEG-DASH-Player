@@ -1,10 +1,8 @@
 #include "ProgressSlider.h"
-#include <qpainter.h>
 
 ProgressSlider::ProgressSlider(QWidget *parent) :QSlider(parent)
 {
 }
-
 
 ProgressSlider::~ProgressSlider()
 {
