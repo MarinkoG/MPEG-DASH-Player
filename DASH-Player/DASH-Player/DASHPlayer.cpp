@@ -43,6 +43,7 @@ void DASHPlayer::print(string string)  //for debuging and testing purposes
 
 void DASHPlayer::on_playButton_clicked()
 {
+	mediaEngine->start();
 }
 
 void DASHPlayer::on_progressSlider_valueChanged()
