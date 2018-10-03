@@ -9,8 +9,12 @@
 #include <deque>
 #include "SegmentFactory.h"
 #include "SegmentDownloader.h"
+#include "SegmentDecoder.h"
 #include <fstream>
 #include <iostream>
+#include <QMutex>
+#include <QImage>
+
 
 using namespace	std;
 using namespace dash::mpd;
@@ -27,15 +31,20 @@ public:
 	bool start();
 	bool createSegments(IMPD* mpd);
 	bool downloadSegments();
+	bool decodeSegments();
 	static void print(string string);
 
 private:
 	Frame *video;
 	IMPD *mpd;
 	deque<ISegment*> segments;
-	deque<ISegment*> downloadedSegments;
+	deque<ISegment*> segmentBuffer;
 	SegmentFactory* segmentFactory;
 	SegmentDownloader* segmentDownloader;
+	SegmentDecoder* segmentDecoder;
+	deque<QImage*> frameBuffer;
+	QMutex frameBufferLock;
+	QMutex segmentBufferLock;
 
 public slots:
 	void saveSegment();
