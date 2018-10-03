@@ -15,13 +15,13 @@ class SegmentDownloader : public QThread
 	Q_OBJECT
 
 public:
-	SegmentDownloader(deque<ISegment*>* segments, deque<ISegment*>* downloadedSegments);
+	SegmentDownloader(deque<ISegment*>* segments, deque<ISegment*>* segmentBuffer);
 	~SegmentDownloader();
 	void run() override;
 
 private:
 	deque<ISegment*>* segments;
-	deque<ISegment*>* downloadedSegments;
+	deque<ISegment*>* segmentBuffer;
 	QMutex mutex;
 	QWaitCondition waitCondition;
 

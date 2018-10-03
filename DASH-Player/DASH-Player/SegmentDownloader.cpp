@@ -1,8 +1,8 @@
 #include "SegmentDownloader.h"
 
-SegmentDownloader::SegmentDownloader(deque<ISegment*>* segments, deque<ISegment*>* downloadedSegments) :
+SegmentDownloader::SegmentDownloader(deque<ISegment*>* segments, deque<ISegment*>* segmentBuffer) :
 	segments(segments),
-	downloadedSegments(downloadedSegments)
+	segmentBuffer(segmentBuffer)
 {
 }
 
@@ -22,7 +22,7 @@ void SegmentDownloader::run()
 		segment->StartDownload();
 		mutex.lock();
 		waitCondition.wait(&mutex);
-		downloadedSegments->push_back(segment);
+		segmentBuffer->push_back(segment);
 		mutex.unlock();
 	}
 	emit downloadFinished(result);

@@ -29,6 +29,7 @@ bool MediaEngine::start()
 {
 	createSegments(mpd);
 	downloadSegments();
+	decodeSegments();
 	return false;
 }
 
@@ -41,9 +42,16 @@ bool MediaEngine::createSegments(IMPD * mpd)
 
 bool MediaEngine::downloadSegments()
 {
-	segmentDownloader = new SegmentDownloader(&segments, &downloadedSegments);
+	segmentDownloader = new SegmentDownloader(&segments, &segmentBuffer);
 	segmentDownloader->start();
 	return true;
+}
+
+bool MediaEngine::decodeSegments()
+{
+	segmentDecoder = new SegmentDecoder(&frameBufferLock, &frameBuffer, &segmentBufferLock, &segmentBuffer);
+	segmentDecoder->start();
+	return false;
 }
 
 void MediaEngine::print(string string) // for testing
@@ -57,7 +65,7 @@ void MediaEngine::print(string string) // for testing
 void MediaEngine::saveSegment() // for testing
 {
 	int i = 1;
-	for each (ISegment* segment in downloadedSegments)
+	for each (ISegment* segment in segmentBuffer)
 	{
 		ofstream file;
 		string extension = ".mp4";

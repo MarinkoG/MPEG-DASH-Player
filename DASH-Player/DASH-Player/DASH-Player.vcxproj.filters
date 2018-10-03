@@ -50,6 +50,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_DownloadObserver.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="SegmentDecoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_SegmentDecoder.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_SegmentDecoder.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">
@@ -95,6 +104,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="DownloadObserver.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SegmentDecoder.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
