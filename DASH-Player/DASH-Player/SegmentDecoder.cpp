@@ -14,6 +14,7 @@ SegmentDecoder::~SegmentDecoder()
 	this->wait();
 }
 
+
 static void print(string string) // for testing
 {
 	ofstream myfile;
@@ -90,13 +91,14 @@ static void decode(AVCodecContext *codecContext, AVFrame *frame, AVPacket *pkt, 
 			src += rgbFrame->linesize[0];
 		}
 
+
 		std::string filename = "decodedImg\\slika" + std::to_string(i);
 		filename += ".png";
 
 		image->save(*(new QString(filename.c_str())));
 		av_frame_free(&rgbFrame);
 		image->~QImage();
-                                                      	}
+    }
 }
 
 void saveSegment(ISegment* segment) // for testing
@@ -191,7 +193,6 @@ void SegmentDecoder::run()
 			return;
 		}
 
-
 		while (av_read_frame(formatContext, packet) >= 0)
 		{
 			if (packet->stream_index == videoStream)
@@ -207,6 +208,7 @@ void SegmentDecoder::run()
 		avformat_close_input(&formatContext);
 		avcodec_free_context(&codecContext);
 		av_frame_free(&frame);
+
 	}
 	emit decodingFinished(result);
 }

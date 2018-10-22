@@ -65,10 +65,12 @@ void MediaEngine::print(string string) // for testing
 
 void MediaEngine::saveSegment() // for testing
 {
+
 	decodeSegments();
 /*	int a = segmentBuffer.size();
 	print(std::to_string(a));
 	int i = 0;
+	int i = 1;
 	for each (ISegment* segment in segmentBuffer)
 	{
 		ofstream file;

@@ -15,7 +15,6 @@
 #include <QMutex>
 #include <QImage>
 
-
 using namespace	std;
 using namespace dash::mpd;
 
