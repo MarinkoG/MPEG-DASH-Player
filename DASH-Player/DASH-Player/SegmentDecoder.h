@@ -24,7 +24,7 @@ class SegmentDecoder : public QThread
 	Q_OBJECT
 
 public:
-	SegmentDecoder(deque<QImage*> *frameBuffer, QMutex *frameBufferMutex, QWaitCondition *frameBufferNotEmpty, deque<ISegment*> *segmentBuffer, QMutex *segmentBufferMutex, QWaitCondition *segmentBufferNotEmpty);
+	SegmentDecoder(deque<QImage*> *frameBuffer, QMutex *frameBufferMutex, QWaitCondition *frameBufferNotEmpty, QWaitCondition *frameBufferNotFull, deque<ISegment*> *segmentBuffer, QMutex *segmentBufferMutex, QWaitCondition *segmentBufferNotEmpty);
 	~SegmentDecoder();
 	void run() override;
 
@@ -34,6 +34,7 @@ private:
 	deque<ISegment*> *segmentBuffer;
 	QMutex *frameBufferMutex;
 	QWaitCondition *frameBufferNotEmpty;
+	QWaitCondition *frameBufferNotFull;
 	QMutex *segmentBufferMutex;
 	QWaitCondition *segmentBufferNotEmpty;
 	int width;
@@ -41,7 +42,9 @@ private:
 	void decode(AVCodecContext *codecContext, AVFrame *frame, AVPacket *pkt);
 	void saveToBuffer(AVFrame *rgbFrame);
 	long numberOfFrames = 0;
+	int frameBufferSize = 500;
 
 signals:
 	void segmentDecoded(long numberOfFrames);
+	void framesDecoded();
 };

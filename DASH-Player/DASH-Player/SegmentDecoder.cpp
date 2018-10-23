@@ -1,9 +1,10 @@
 #include "SegmentDecoder.h"
 
-SegmentDecoder::SegmentDecoder(deque<QImage*> *frameBuffer, QMutex *frameBufferMutex, QWaitCondition *frameBufferNotEmpty, deque<ISegment*> *segmentBuffer, QMutex *segmentBufferMutex, QWaitCondition *segmentBufferNotEmpty) :
+SegmentDecoder::SegmentDecoder(deque<QImage*> *frameBuffer, QMutex *frameBufferMutex, QWaitCondition *frameBufferNotEmpty, QWaitCondition *frameBufferNotFull, deque<ISegment*> *segmentBuffer, QMutex *segmentBufferMutex, QWaitCondition *segmentBufferNotEmpty) :
 	frameBuffer(frameBuffer),
 	frameBufferMutex(frameBufferMutex),
 	frameBufferNotEmpty(frameBufferNotEmpty),
+	frameBufferNotFull(frameBufferNotFull),
 	segmentBuffer(segmentBuffer),
 	segmentBufferMutex(segmentBufferMutex),
 	segmentBufferNotEmpty(segmentBufferNotEmpty)
@@ -88,6 +89,13 @@ void SegmentDecoder::decode(AVCodecContext *codecContext, AVFrame *frame, AVPack
 
 void SegmentDecoder::saveToBuffer(AVFrame *rgbFrame)
 {
+	frameBufferMutex->lock();
+	if (frameBuffer->size() >= frameBufferSize)
+	{
+		frameBufferNotFull->wait(frameBufferMutex);
+	}
+	frameBufferMutex->unlock();
+
 	QImage *image = new QImage(rgbFrame->width, rgbFrame->height, QImage::Format_RGB32);
 	uint8_t *src = (uint8_t *)rgbFrame->data[0];
 
@@ -101,10 +109,14 @@ void SegmentDecoder::saveToBuffer(AVFrame *rgbFrame)
 		src += rgbFrame->linesize[0];
 	}
 	numberOfFrames++;
+	frameBuffer->push_back(image);
 
 	frameBufferMutex->lock();
-	frameBuffer->push_back(image);
-	frameBufferNotEmpty->wakeAll();
+	if (frameBuffer->size() == 1)
+	{
+		emit framesDecoded();
+		frameBufferNotEmpty->wakeAll();
+	}
 	frameBufferMutex->unlock();
 }
 
@@ -193,5 +205,6 @@ void SegmentDecoder::run()
 		avcodec_free_context(&codecContext);
 		avformat_close_input(&formatContext);
 		avio_context_free(&inputContext);
+		av_free(ioBuffer);
 	}
 }
