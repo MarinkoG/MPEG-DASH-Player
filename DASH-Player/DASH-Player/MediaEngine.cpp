@@ -49,9 +49,16 @@ void MediaEngine::downloadSegments()
 
 void MediaEngine::decodeSegments()
 {
-	segmentDecoder = new SegmentDecoder(&frameBuffer, &frameBufferMutex, &frameBufferNotEmpty, &segmentBuffer, &segmentBufferMutex, &segmentBufferNotEmpty);
+	segmentDecoder = new SegmentDecoder(&frameBuffer, &frameBufferMutex, &frameBufferNotEmpty, &frameBufferNotFull, &segmentBuffer, &segmentBufferMutex, &segmentBufferNotEmpty);
 	QObject::connect(segmentDecoder, &SegmentDecoder::segmentDecoded, this, &MediaEngine::saveNumberOfFrames);
+	QObject::connect(segmentDecoder, &SegmentDecoder::framesDecoded, this, &MediaEngine::startRendering);
 	segmentDecoder->start();
+}
+
+void MediaEngine::renderVideo()
+{
+	videoRenderer = new VideoRenderer(video, &frameBuffer, &frameBufferMutex, &frameBufferNotEmpty, &frameBufferNotFull);
+	videoRenderer->start();
 }
 
 void MediaEngine::print(string string) // for testing
@@ -68,6 +75,15 @@ void MediaEngine::startDecoding()
 	{
 		decodeSegments();
 		decodingStarted = true;
+	}
+}
+
+void MediaEngine::startRendering()
+{
+	if (!renderingStarted)
+	{
+		renderVideo();
+		renderingStarted = true;
 	}
 }
 
