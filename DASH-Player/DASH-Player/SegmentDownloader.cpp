@@ -1,8 +1,10 @@
 #include "SegmentDownloader.h"
 
-SegmentDownloader::SegmentDownloader(deque<ISegment*>* segments, deque<ISegment*>* segmentBuffer) :
+SegmentDownloader::SegmentDownloader(deque<ISegment*> *segments, deque<ISegment*> *segmentBuffer, QMutex *segmentBufferMutex, QWaitCondition *segmentBufferNotEmpty) :
 	segments(segments),
-	segmentBuffer(segmentBuffer)
+	segmentBuffer(segmentBuffer),
+	segmentBufferMutex(segmentBufferMutex),
+	segmentBufferNotEmpty(segmentBufferNotEmpty)
 {
 }
 
@@ -14,16 +16,22 @@ SegmentDownloader::~SegmentDownloader()
 
 void SegmentDownloader::run()
 {
-	QString result;
-	for each (ISegment* segment in *segments)
+	for each (ISegment *segment in *segments)
 	{
-		DownloadObserver* downloadObserver = new DownloadObserver(&waitCondition);
+		DownloadObserver *downloadObserver = new DownloadObserver(&downloadFinished);
+
 		segment->AttachDownloadObserver(downloadObserver);
 		segment->StartDownload();
-		mutex.lock();
-		waitCondition.wait(&mutex);
+
+		segmentMutex.lock();
+		downloadFinished.wait(&segmentMutex);
+		segmentMutex.unlock();
+
+		segmentBufferMutex->lock();
 		segmentBuffer->push_back(segment);
-		mutex.unlock();
+		segmentBufferNotEmpty->wakeAll();
+		segmentBufferMutex->unlock();
+
+		emit segmentDownloaded();
 	}
-	emit downloadFinished(result);
 }

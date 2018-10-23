@@ -6,13 +6,12 @@
 #include <qmutex.h>
 #include <qwaitcondition.h>
 #include <qimage.h>
-//#include "MediaEngine.h"
 extern "C"
 {
-#include <libavcodec\avcodec.h>
-#include <libavformat\avformat.h>
-#include <libswscale\swscale.h>
-#include<libavutil\imgutils.h>
+	#include <libavcodec\avcodec.h>
+	#include <libavformat\avformat.h>
+	#include <libswscale\swscale.h>
+	#include<libavutil\imgutils.h>
 }
 #include <fstream>
 #include <iostream>
@@ -25,16 +24,24 @@ class SegmentDecoder : public QThread
 	Q_OBJECT
 
 public:
-	SegmentDecoder(QMutex* frameBufferLock, deque<QImage*>* frameBuffer, QMutex* segmentBufferLock, deque<ISegment*>* segmentBuffer);
+	SegmentDecoder(deque<QImage*> *frameBuffer, QMutex *frameBufferMutex, QWaitCondition *frameBufferNotEmpty, deque<ISegment*> *segmentBuffer, QMutex *segmentBufferMutex, QWaitCondition *segmentBufferNotEmpty);
 	~SegmentDecoder();
 	void run() override;
 
 private:
-	QMutex * frameBufferLock;
-	deque<QImage*>* frameBuffer;
-	deque<ISegment*>* segmentBuffer;
-	QMutex* segmentBufferLock;
+	size_t bufferSize = 32768;
+	deque<QImage*> *frameBuffer;
+	deque<ISegment*> *segmentBuffer;
+	QMutex *frameBufferMutex;
+	QWaitCondition *frameBufferNotEmpty;
+	QMutex *segmentBufferMutex;
+	QWaitCondition *segmentBufferNotEmpty;
+	int width;
+	int height;
+	void decode(AVCodecContext *codecContext, AVFrame *frame, AVPacket *pkt);
+	void saveToBuffer(AVFrame *rgbFrame);
+	long numberOfFrames = 0;
 
 signals:
-	void decodingFinished(const QString &result);
+	void segmentDecoded(long numberOfFrames);
 };

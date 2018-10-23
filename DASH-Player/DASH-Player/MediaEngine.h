@@ -28,9 +28,9 @@ public:
 	bool parseMPD(string url);
 	IMPD* getMPD();
 	bool start();
-	bool createSegments(IMPD* mpd);
-	bool downloadSegments();
-	bool decodeSegments();
+	bool createSegments(long currentSegmentNumber);
+	void downloadSegments();
+	void decodeSegments();
 	static void print(string string);
 
 private:
@@ -39,12 +39,18 @@ private:
 	deque<ISegment*> segments;
 	deque<ISegment*> segmentBuffer;
 	SegmentFactory* segmentFactory;
-	SegmentDownloader* segmentDownloader;
-	SegmentDecoder* segmentDecoder;
+	SegmentDownloader *segmentDownloader;
+	SegmentDecoder *segmentDecoder;
 	deque<QImage*> frameBuffer;
-	QMutex frameBufferLock;
-	QMutex segmentBufferLock;
+	QMutex frameBufferMutex;
+	QWaitCondition frameBufferNotEmpty;
+	QMutex segmentBufferMutex;
+	QWaitCondition segmentBufferNotEmpty;
+	long currentSegmentNumber;
+	bool decodingStarted = false;
+	vector<long> segmentFrameNumbers;
 
 public slots:
-	void saveSegment();
+	void startDecoding();
+	void saveNumberOfFrames(long numberOfFrames);
 };

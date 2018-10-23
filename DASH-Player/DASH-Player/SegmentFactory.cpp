@@ -4,7 +4,7 @@ SegmentFactory::SegmentFactory()
 {
 }
 
-SegmentFactory::SegmentFactory(IMPD * mpd):
+SegmentFactory::SegmentFactory(IMPD *mpd):
 	mpd(mpd)
 {
 }
@@ -13,7 +13,7 @@ SegmentFactory::~SegmentFactory()
 {
 }
 
-IRepresentation* SegmentFactory::getRepresentation(int bandwidth)
+IRepresentation *SegmentFactory::getRepresentation(int bandwidth)
 {
 	adaptationSet = getAdaptationSet("video");
 	vector <IRepresentation*> representations = adaptationSet->GetRepresentation();
@@ -30,7 +30,7 @@ IRepresentation* SegmentFactory::getRepresentation(int bandwidth)
 	}
 	else
 	{
-		sort(representations.begin(), representations.end(), [](IRepresentation* first, IRepresentation* second)
+		sort(representations.begin(), representations.end(), [](IRepresentation *first, IRepresentation *second)
 		{
 			return first->GetBandwidth() < second->GetBandwidth();
 		});
@@ -39,7 +39,7 @@ IRepresentation* SegmentFactory::getRepresentation(int bandwidth)
 	}
 }
 
-IAdaptationSet * SegmentFactory::getAdaptationSet(string type)
+IAdaptationSet *SegmentFactory::getAdaptationSet(string type)
 {
 	if (mpd->GetPeriods().size() > 0)
 	{
@@ -86,7 +86,7 @@ deque<ISegment*> SegmentFactory::getSegments()
 	return segments;
 }
 
-deque<ISegment*> SegmentFactory::createSegments(int bandwidth)
+deque<ISegment*> SegmentFactory::createSegments(int bandwidth, long currentSegmentNumber)
 {
 	representation = getRepresentation(bandwidth);
 	findSegmentFolderPath();

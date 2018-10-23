@@ -17,15 +17,15 @@ public:
 	SegmentFactory(IMPD * mpd);
 	~SegmentFactory();
 	deque<ISegment*> getSegments();
-	deque<ISegment*> createSegments(int bandwidth = 0);
+	deque<ISegment*> createSegments(int bandwidth, long currentSegmentNumber = -1);
 	
 private:
 	IMPD* mpd;
 	IPeriod* period;
-	IAdaptationSet* adaptationSet;
-	IRepresentation* representation;
-	IRepresentation * getRepresentation(int bandwidth = 0);
-	IAdaptationSet* getAdaptationSet(string type);
+	IAdaptationSet *adaptationSet;
+	IRepresentation *representation;
+	IRepresentation *getRepresentation(int bandwidth = 0);
+	IAdaptationSet *getAdaptationSet(string type);
 	void findSegmentFolderPath();
 	vector <IBaseUrl*> baseUrls;
 	deque<ISegment*> segments;

@@ -2,6 +2,7 @@
 
 MediaEngine::MediaEngine(Frame *video) : video(video)
 {
+	currentSegmentNumber = -1;
 }
 
 MediaEngine::~MediaEngine()
@@ -27,32 +28,30 @@ IMPD * MediaEngine::getMPD()
 
 bool MediaEngine::start()
 {
-	createSegments(mpd);
+	createSegments(currentSegmentNumber);
 	downloadSegments();
-	//decodeSegments();
 	return false;
 }
 
-bool MediaEngine::createSegments(IMPD * mpd)
+bool MediaEngine::createSegments(long currentSegmentNumber)
 {
 	segmentFactory = new SegmentFactory(mpd);
-	segments = segmentFactory->createSegments();
+	segments = segmentFactory->createSegments(0, currentSegmentNumber);
 	return true;
 }
 
-bool MediaEngine::downloadSegments()
+void MediaEngine::downloadSegments()
 {
-	segmentDownloader = new SegmentDownloader(&segments, &segmentBuffer);
-	QObject::connect(segmentDownloader, &SegmentDownloader::downloadFinished, this, &MediaEngine::saveSegment);
+	segmentDownloader = new SegmentDownloader(&segments, &segmentBuffer,&segmentBufferMutex,&segmentBufferNotEmpty);
+	QObject::connect(segmentDownloader, &SegmentDownloader::segmentDownloaded, this, &MediaEngine::startDecoding);
 	segmentDownloader->start();
-	return true;
 }
 
-bool MediaEngine::decodeSegments()
+void MediaEngine::decodeSegments()
 {
-	segmentDecoder = new SegmentDecoder(&frameBufferLock, &frameBuffer, &segmentBufferLock, &segmentBuffer);
+	segmentDecoder = new SegmentDecoder(&frameBuffer, &frameBufferMutex, &frameBufferNotEmpty, &segmentBuffer, &segmentBufferMutex, &segmentBufferNotEmpty);
+	QObject::connect(segmentDecoder, &SegmentDecoder::segmentDecoded, this, &MediaEngine::saveNumberOfFrames);
 	segmentDecoder->start();
-	return false;
 }
 
 void MediaEngine::print(string string) // for testing
@@ -63,33 +62,16 @@ void MediaEngine::print(string string) // for testing
 	myfile.close();
 }
 
-void MediaEngine::saveSegment() // for testing
+void MediaEngine::startDecoding()
 {
-
-	decodeSegments();
-/*	int a = segmentBuffer.size();
-	print(std::to_string(a));
-	int i = 0;
-	int i = 1;
-	for each (ISegment* segment in segmentBuffer)
+	if (!decodingStarted)
 	{
-		ofstream file;
-		string extension = ".mp4";
-		string fileName = "before" + to_string(i);
-		fileName = fileName + extension;
-		file.open(fileName, ios::out | ios::binary);
-		size_t len = 32768;
-		uint8_t *p_data = new uint8_t[32768];
-		int ret = 0;
-		do
-		{
-			ret = segment->Read(p_data, len);
-			if (ret > 0)
-			{
-				(&file)->write((char *)p_data, ret);
-			}
-		} while (ret > 0);
-		file.close();
-		i++;
-	}*/
+		decodeSegments();
+		decodingStarted = true;
+	}
+}
+
+void MediaEngine::saveNumberOfFrames(long numberOfFrames)
+{
+	segmentFrameNumbers.push_back(numberOfFrames);
 }

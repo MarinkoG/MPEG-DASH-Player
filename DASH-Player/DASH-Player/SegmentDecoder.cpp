@@ -1,10 +1,12 @@
 #include "SegmentDecoder.h"
 
-SegmentDecoder::SegmentDecoder(QMutex* frameBufferLock, deque<QImage*>* frameBuffer, QMutex* segmentBufferLock, deque<ISegment*>* segmentBuffer) :
-	frameBufferLock(frameBufferLock),
+SegmentDecoder::SegmentDecoder(deque<QImage*> *frameBuffer, QMutex *frameBufferMutex, QWaitCondition *frameBufferNotEmpty, deque<ISegment*> *segmentBuffer, QMutex *segmentBufferMutex, QWaitCondition *segmentBufferNotEmpty) :
 	frameBuffer(frameBuffer),
-	segmentBufferLock(segmentBufferLock),
-	segmentBuffer(segmentBuffer)
+	frameBufferMutex(frameBufferMutex),
+	frameBufferNotEmpty(frameBufferNotEmpty),
+	segmentBuffer(segmentBuffer),
+	segmentBufferMutex(segmentBufferMutex),
+	segmentBufferNotEmpty(segmentBufferNotEmpty)
 {
 }
 
@@ -23,19 +25,24 @@ static void print(string string) // for testing
 	myfile.close();
 }
 
-static int read(void* data, uint8_t *buffer, int bufferSize)
+static int read(void *data, uint8_t *buffer, int bufferSize)
 {
-	ISegment* segment = (ISegment*)data;
+	ISegment *segment = (ISegment*)data;
 	int ret = segment->Read(buffer, bufferSize);
 	return ret;
 }
 
-static void decode(AVCodecContext *codecContext, AVFrame *frame, AVPacket *pkt, int i)
+void SegmentDecoder::decode(AVCodecContext *codecContext, AVFrame *frame, AVPacket *pkt)
 {
 	int ret;
+	AVFrame *rgbFrame = NULL;
+	int numBytes;
+	uint8_t *buffer = NULL;
+	struct SwsContext *sws_ctx = NULL;
+
 	ret = avcodec_send_packet(codecContext, pkt);
 	if (ret < 0) {
-		print("Error sending a packet for decoding\n");
+		print("Error sending a packet for decoding");
 		return;
 	}
 	while (ret >= 0) {
@@ -43,19 +50,13 @@ static void decode(AVCodecContext *codecContext, AVFrame *frame, AVPacket *pkt, 
 		if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
 			return;
 		else if (ret < 0) {
-			print("Error during decoding\n");
+			print("Error during decoding");
 			return;
 		}
 
-		AVFrame *rgbFrame = NULL;
 		rgbFrame = av_frame_alloc();
-
 		rgbFrame->width = frame->width;
 		rgbFrame->height = frame->height;
-
-		int numBytes;
-		uint8_t *buffer = NULL;
-		struct SwsContext *sws_ctx = NULL;
 
 		// Determine required buffer size and allocate buffer
 		numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24, codecContext->width, codecContext->height, 1);
@@ -78,60 +79,39 @@ static void decode(AVCodecContext *codecContext, AVFrame *frame, AVPacket *pkt, 
 		// Convert the image from its native format to RGB
 		sws_scale(sws_ctx, frame->data, frame->linesize, 0, codecContext->height, rgbFrame->data, rgbFrame->linesize);
 
-		QImage *image = new QImage(rgbFrame->width, rgbFrame->height, QImage::Format_RGB32);
-		uint8_t *src = (uint8_t *)rgbFrame->data[0];
+		saveToBuffer(rgbFrame);
 
-		for (size_t y = 0; y < rgbFrame->height; y++)
-		{
-			QRgb *scanLine = (QRgb *)image->scanLine(y);
-
-			for (size_t x = 0; x < rgbFrame->width; x++)
-				scanLine[x] = qRgb(src[3 * x], src[3 * x + 1], src[3 * x + 2]);
-
-			src += rgbFrame->linesize[0];
-		}
-
-
-		std::string filename = "decodedImg\\slika" + std::to_string(i);
-		filename += ".png";
-
-		image->save(*(new QString(filename.c_str())));
+		av_free(buffer);
 		av_frame_free(&rgbFrame);
-		image->~QImage();
-    }
+	}
 }
 
-void saveSegment(ISegment* segment) // for testing
+void SegmentDecoder::saveToBuffer(AVFrame *rgbFrame)
 {
+	QImage *image = new QImage(rgbFrame->width, rgbFrame->height, QImage::Format_RGB32);
+	uint8_t *src = (uint8_t *)rgbFrame->data[0];
 
-	int i = 1;
-
-	ofstream file;
-	string extension = ".mp4";
-	string fileName = "after" + to_string(i);
-	fileName = fileName + extension;
-	file.open(fileName, ios::out | ios::binary);
-	size_t len = 32768;
-	uint8_t *p_data = new uint8_t[32768];
-	int ret = 0;
-	do
+	for (size_t y = 0; y < rgbFrame->height; y++)
 	{
-		ret = segment->Read(p_data, len);
-		if (ret > 0)
-		{
-			(&file)->write((char *)p_data, ret);
-		}
-	} while (ret > 0);
-	file.close();
-	i++;
-}
+		QRgb *scanLine = (QRgb *)image->scanLine(y);
 
+		for (size_t x = 0; x < rgbFrame->width; x++)
+			scanLine[x] = qRgb(src[3 * x], src[3 * x + 1], src[3 * x + 2]);
+
+		src += rgbFrame->linesize[0];
+	}
+	numberOfFrames++;
+
+	frameBufferMutex->lock();
+	frameBuffer->push_back(image);
+	frameBufferNotEmpty->wakeAll();
+	frameBufferMutex->unlock();
+}
 
 void SegmentDecoder::run()
 {
 	QString result;
 	AVFormatContext *formatContext = NULL;
-	size_t bufferSize = 32768;
 	uint8_t *ioBuffer = NULL;
 	AVCodecContext *codecContext = NULL;
 	AVCodec *codec = NULL;
@@ -139,26 +119,34 @@ void SegmentDecoder::run()
 	AVFrame *frame = NULL;
 	AVPacket *packet = NULL;
 	AVIOContext *inputContext = NULL;
-	int a = 0;
-	a = segmentBuffer->size();
-	print(std::to_string(a));
-	for each (ISegment* segment in *segmentBuffer)
+
+	forever
 	{
-		//saveSegment(segment);
-		int i = 0;
+		ISegment *segment = NULL;
+		segmentBufferMutex->lock();
+		if (segmentBuffer->size() == 0)
+		{
+			segmentBufferNotEmpty->wait(segmentBufferMutex);
+		}
+		segmentBufferMutex->unlock();
+
+		segment = *segmentBuffer->begin();
+		segmentBuffer->pop_front();
+
 		formatContext = avformat_alloc_context();
 		ioBuffer = (uint8_t*)av_malloc(bufferSize);
 		inputContext = avio_alloc_context(ioBuffer, bufferSize, 0, segment, &read, NULL, NULL);
 		formatContext->pb = inputContext;
 		formatContext->pb->seekable = 0;
-
 		if (avformat_open_input(&formatContext, "", NULL, NULL) != 0)
 		{
+			print("Could not open format context");
 			return;
 		}
 
 		if (avformat_find_stream_info(formatContext, NULL) < 0)
 		{
+			print("Could not find stream");
 			return;
 		}
 
@@ -167,20 +155,17 @@ void SegmentDecoder::run()
 
 		codecContext = avcodec_alloc_context3(codec);
 		if (!codecContext) {
-			print("Could not allocate video codec context\n");
+			print("Could not allocate video codec context");
 			return;
 		}
 
 		if ((avcodec_parameters_to_context(codecContext, formatContext->streams[videoStream]->codecpar)) < 0) {
+			print("Could not copy codec context parameters");
 			return;
 		}
 
-		/* For some codecs, such as msmpeg4 and mpeg4, width and height
-		MUST be initialized there because this information is not
-		available in the bitstream. */
-
 		if (avcodec_open2(codecContext, codec, NULL) < 0) {
-			print("Could not open codec\n");
+			print("Could not open codec");
 			return;
 		}
 
@@ -189,26 +174,24 @@ void SegmentDecoder::run()
 
 		frame = av_frame_alloc();
 		if (!frame) {
-			print("Could not allocate video frame\n");
+			print("Could not allocate video frame");
 			return;
 		}
-
 		while (av_read_frame(formatContext, packet) >= 0)
 		{
 			if (packet->stream_index == videoStream)
 			{
-				++i;
-				decode(codecContext, frame, packet, i);
+				decode(codecContext, frame, packet);
 			}
 			av_packet_unref(packet);
 		}
 		av_packet_free(&packet);
-		decode(codecContext, frame, NULL, i);
+		decode(codecContext, frame, NULL);
+		emit segmentDecoded(numberOfFrames);
 
-		avformat_close_input(&formatContext);
-		avcodec_free_context(&codecContext);
 		av_frame_free(&frame);
-
+		avcodec_free_context(&codecContext);
+		avformat_close_input(&formatContext);
+		avio_context_free(&inputContext);
 	}
-	emit decodingFinished(result);
 }
