@@ -1,6 +1,8 @@
 #include "MediaEngine.h"
 
-MediaEngine::MediaEngine(Frame *video) : video(video)
+MediaEngine::MediaEngine(IMPD *mpd, Frame *video) :
+	mpd(mpd),
+	video(video)
 {
 	currentSegmentNumber = -1;
 }
@@ -36,7 +38,7 @@ bool MediaEngine::start()
 bool MediaEngine::createSegments(long currentSegmentNumber)
 {
 	segmentFactory = new SegmentFactory(mpd);
-	segments = segmentFactory->createSegments(0, currentSegmentNumber);
+	segments = segmentFactory->createSegments(bandwidth, currentSegmentNumber);
 	return true;
 }
 
@@ -57,6 +59,7 @@ void MediaEngine::decodeSegments()
 
 void MediaEngine::renderVideo()
 {
+	adjustPlayerSize();
 	videoRenderer = new VideoRenderer(video, &frameBuffer, &frameBufferMutex, &frameBufferNotEmpty, &frameBufferNotFull);
 	videoRenderer->start();
 }
@@ -90,4 +93,36 @@ void MediaEngine::startRendering()
 void MediaEngine::saveNumberOfFrames(long numberOfFrames)
 {
 	segmentFrameNumbers.push_back(numberOfFrames);
+}
+
+void MediaEngine::adjustPlayerSize()
+{
+	video->resize(width, height);
+	video->setMinimumSize(width, height);
+	QWidget *player = video->parentWidget();
+
+	while (player->parentWidget())
+	{
+		player = player->parentWidget();
+	}
+	player->adjustSize();
+}
+
+void MediaEngine::setRepresentation(IRepresentation * representation)
+{
+	this->representation = representation;
+}
+
+void MediaEngine::setBandwidth(int bandwidth)
+{
+	this->bandwidth = bandwidth;
+}
+
+void MediaEngine::setVideoQuality(QString videoQuality)
+{
+	videoQuality.chop(1);
+	width = videoQuality.split("x").at(0).toInt();
+	videoQuality = videoQuality.split("x").at(1);
+	height = videoQuality.split(" (").at(0).toInt();
+	bandwidth = videoQuality.split(" (").at(1).toInt();
 }

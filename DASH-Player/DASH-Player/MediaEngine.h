@@ -24,7 +24,7 @@ class MediaEngine : public QObject
 	Q_OBJECT
 
 public:
-	MediaEngine(Frame *video);
+	MediaEngine(IMPD *mpd, Frame *video);
 	~MediaEngine();
 	bool parseMPD(string url);
 	IMPD* getMPD();
@@ -34,6 +34,10 @@ public:
 	void decodeSegments();
 	void renderVideo();
 	static void print(string string);
+	void adjustPlayerSize();
+	void setRepresentation(IRepresentation *representation);
+	void setBandwidth(int bandwidth);
+	void setVideoQuality(QString videoQuality);
 
 private:
 	Frame *video;
@@ -54,9 +58,14 @@ private:
 	bool renderingStarted = false;
 	vector<long> segmentFrameNumbers;
 	VideoRenderer *videoRenderer;
+	IRepresentation *representation;
+	int bandwidth = 0;
+	int width = 0;
+	int height = 0;
 
 public slots:
 	void startDecoding();
 	void startRendering();
 	void saveNumberOfFrames(long numberOfFrames);
+
 };

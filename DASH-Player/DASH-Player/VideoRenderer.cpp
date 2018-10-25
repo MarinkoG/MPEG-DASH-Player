@@ -12,8 +12,8 @@ VideoRenderer::VideoRenderer(Frame *frame, deque<QImage*> *frameBuffer, QMutex *
 
 VideoRenderer::~VideoRenderer()
 {
-	//this->quit();
-	//this->wait();
+	this->quit();
+	this->wait();
 }
 
 static void print(string string) // for testing

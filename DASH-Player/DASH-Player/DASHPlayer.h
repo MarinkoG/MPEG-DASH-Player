@@ -8,6 +8,7 @@
 #include <fstream>
 #include <stdlib.h>
 #include <regex>
+#include "MPDParser.h"
 
 using namespace std;
 using namespace dash::mpd;
@@ -19,16 +20,21 @@ class DASHPlayer : public QMainWindow
 public:
 	DASHPlayer(QWidget *parent = Q_NULLPTR);
 	void print(string string);
+	void setUI();
 
 private:
 	Ui::DASHPlayerClass ui;
 	Frame *video;
 	MediaEngine *mediaEngine;
 	string url;
+	MPDParser *mpdParser;
+	int width;
+	int height;
 
 private slots:
 	void on_downloadButton_clicked();
 	void on_playButton_clicked();
 	void on_progressSlider_valueChanged();
 	void on_videoQuality_currentIndexChanged();
+
 };

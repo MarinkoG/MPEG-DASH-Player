@@ -68,6 +68,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_VideoRenderer.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="MPDParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">
@@ -133,6 +136,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SegmentFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MPDParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
