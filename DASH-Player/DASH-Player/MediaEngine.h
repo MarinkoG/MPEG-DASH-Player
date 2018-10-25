@@ -38,6 +38,7 @@ public:
 	void setRepresentation(IRepresentation *representation);
 	void setBandwidth(int bandwidth);
 	void setVideoQuality(QString videoQuality);
+	void showLoadingScreen();
 
 private:
 	Frame *video;

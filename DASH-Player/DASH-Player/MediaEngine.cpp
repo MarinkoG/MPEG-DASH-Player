@@ -30,6 +30,7 @@ IMPD * MediaEngine::getMPD()
 
 bool MediaEngine::start()
 {
+	showLoadingScreen();
 	createSegments(currentSegmentNumber);
 	downloadSegments();
 	return false;
@@ -125,4 +126,18 @@ void MediaEngine::setVideoQuality(QString videoQuality)
 	videoQuality = videoQuality.split("x").at(1);
 	height = videoQuality.split(" (").at(0).toInt();
 	bandwidth = videoQuality.split(" (").at(1).toInt();
+}
+
+void MediaEngine::showLoadingScreen()
+{
+	QImage *image = NULL;
+	if (image == NULL)
+	{
+		image = new QImage(video->width(), video->height(), QImage::Format_RGB32);
+	}
+	QPainter p(image);
+	p.setPen(QPen(Qt::white));
+	p.setFont(QFont("Times", 20, QFont::Bold));
+	p.drawText(image->rect(), Qt::AlignCenter, "LOADING");
+	video->showFrame(&(QPixmap::fromImage(*image)));
 }
