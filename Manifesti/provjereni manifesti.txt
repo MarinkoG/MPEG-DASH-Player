@@ -1,0 +1,9 @@
+http://www-itec.aau.at/~cmueller/libdashtest/showcases/big_buck_bunny_480.mpd
+
+http://da-se02.se.xsvc27-stu.main.xcdn.sda.t-online.de/dash01/dashstream/streaming/jerprovider/171108/635702396047320369/Die_drei_Musketiere_deu_20_1080k-HEVC-SD.mpd
+
+
+http://xsvc27-stu.main.xcdn.sda.t-online.de/dash01/dashstream/streaming/jerprovider/171109/635702312285375027/Die_drei_Musketiere_deu_20_2200k-HEVC-HD.mpd
+
+
+http://dash.edgesuite.net/envivio/dashpr/clear/Manifest.mpd

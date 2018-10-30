@@ -1,5 +1,4 @@
 #include "VideoRenderer.h"
-#include <qimage.h>
 
 VideoRenderer::VideoRenderer(Frame *frame, deque<QImage*> *frameBuffer, QMutex *frameBufferMutex, QWaitCondition *frameBufferNotEmpty, QWaitCondition *frameBufferNotFull) :
 	frame(frame),
@@ -57,7 +56,7 @@ long VideoRenderer::getNumberOfRenderedFrames()
 	return numberOfRenderedFrames;
 }
 
-void VideoRenderer::setFramerate(int framerate)
+void VideoRenderer::setFramerate(double framerate)
 {
 	this->framerate = framerate;
 }

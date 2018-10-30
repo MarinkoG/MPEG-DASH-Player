@@ -19,13 +19,13 @@ public:
 	VideoRenderer(Frame *frame, deque<QImage*> *frameBuffer, QMutex *frameBufferMutex, QWaitCondition *frameBufferNotEmpty, QWaitCondition *frameBufferNotFull);
 	~VideoRenderer();
 	void run() override;
-	void setFramerate(int framerate);
+	void setFramerate(double framerate);
 	long getNumberOfRenderedFrames();
 	int frameBufferSize = 500;
 
 private:
 	Frame *frame;
-	int framerate = 24;
+	double framerate = 24;
 	deque<QImage*> *frameBuffer;
 	QMutex *frameBufferMutex;
 	QWaitCondition *frameBufferNotEmpty;

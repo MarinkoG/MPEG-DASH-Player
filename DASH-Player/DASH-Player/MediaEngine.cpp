@@ -38,30 +38,49 @@ bool MediaEngine::start()
 
 bool MediaEngine::createSegments(long currentSegmentNumber)
 {
+
+	/*
 	segmentFactory = new SegmentFactory(mpd);
-	segments = segmentFactory->createSegments(bandwidth, currentSegmentNumber);
+	videoSegments = segmentFactory->createSegments(bandwidth, currentSegmentNumber);
+	return true;
+
+	*/
+
+
+	segmentFactory = new SegmentFactory(mpd);
+	audioSegments = segmentFactory->createAudioSegments();
 	return true;
 }
 
 void MediaEngine::downloadSegments()
 {
-	segmentDownloader = new SegmentDownloader(&segments, &segmentBuffer,&segmentBufferMutex,&segmentBufferNotEmpty);
+	/*
+	segmentDownloader = new SegmentDownloader(&videoSegments, &videoSegmentBuffer,&videoSegmentBufferMutex,&videoSegmentBufferNotEmpty);
 	QObject::connect(segmentDownloader, &SegmentDownloader::segmentDownloaded, this, &MediaEngine::startDecoding);
 	segmentDownloader->start();
+	*/
+
+
+
+	segmentDownloader = new SegmentDownloader(&audioSegments, &audioSegmentBuffer, &audioSegmentBufferMutex, &audioSegmentBufferNotEmpty);
+	QObject::connect(segmentDownloader, &SegmentDownloader::segmentDownloaded, this, &MediaEngine::startDecoding);
+	segmentDownloader->start();
+
 }
 
-void MediaEngine::decodeSegments()
+void MediaEngine::decodeVideoSegments()
 {
-	segmentDecoder = new SegmentDecoder(&frameBuffer, &frameBufferMutex, &frameBufferNotEmpty, &frameBufferNotFull, &segmentBuffer, &segmentBufferMutex, &segmentBufferNotEmpty);
-	QObject::connect(segmentDecoder, &SegmentDecoder::segmentDecoded, this, &MediaEngine::saveNumberOfFrames);
-	QObject::connect(segmentDecoder, &SegmentDecoder::framesDecoded, this, &MediaEngine::startRendering);
-	segmentDecoder->start();
+	videoDecoder = new VideoDecoder(&videoSegmentBuffer, &videoSegmentBufferMutex, &videoSegmentBufferNotEmpty, &frameBuffer, &frameBufferMutex, &frameBufferNotEmpty, &frameBufferNotFull);
+	QObject::connect(videoDecoder, &VideoDecoder::segmentDecoded, this, &MediaEngine::saveNumberOfFrames);
+	QObject::connect(videoDecoder, &VideoDecoder::framesDecoded, this, &MediaEngine::startRendering);
+	videoDecoder->start();
 }
 
-void MediaEngine::renderVideo()
+void MediaEngine::renderVideo(double framerate)
 {
 	adjustPlayerSize();
 	videoRenderer = new VideoRenderer(video, &frameBuffer, &frameBufferMutex, &frameBufferNotEmpty, &frameBufferNotFull);
+	videoRenderer->setFramerate(framerate);
 	videoRenderer->start();
 }
 
@@ -75,24 +94,42 @@ void MediaEngine::print(string string) // for testing
 
 void MediaEngine::startDecoding()
 {
+	//saveSegment();
+
+	
 	if (!decodingStarted)
 	{
-		decodeSegments();
+		//decodeVideoSegments();
+		decodeAudioSegments();
 		decodingStarted = true;
 	}
+	
+
 }
 
-void MediaEngine::startRendering()
+void MediaEngine::startRendering(double framerate)
 {
+	print("broj  samplova po kanalu u framu" + to_string(framerate));
+	/**
 	if (!renderingStarted)
 	{
-		renderVideo();
+		renderVideo(framerate);
 		renderingStarted = true;
 	}
+	*/
+}
+
+void MediaEngine::startAudioRendering(QAudioFormat *format)
+{
+	audioRenderer = new AudioRenderer(&audioSampleBuffer, &audioSampleBufferMutex, &audioSampleBufferNotEmpty, &audioSampleBufferNotFull);
+	audioRenderer->setAudioFormat(format);
+	audioRenderer->start();
+
 }
 
 void MediaEngine::saveNumberOfFrames(long numberOfFrames)
 {
+	print("broj samplova " + to_string(numberOfFrames));
 	segmentFrameNumbers.push_back(numberOfFrames);
 }
 
@@ -140,4 +177,38 @@ void MediaEngine::showLoadingScreen()
 	p.setFont(QFont("Times", 20, QFont::Bold));
 	p.drawText(image->rect(), Qt::AlignCenter, "LOADING");
 	video->showFrame(&(QPixmap::fromImage(*image)));
+}
+
+void MediaEngine::decodeAudioSegments()
+{
+	audioDecoder = new AudioDecoder(&audioSegmentBuffer, &audioSegmentBufferMutex, &audioSegmentBufferNotEmpty, &audioSampleBuffer, &audioSampleBufferMutex, &audioSampleBufferNotEmpty, &audioSampleBufferNotFull);
+	QObject::connect(audioDecoder, &AudioDecoder::segmentDecoded, this, &MediaEngine::saveNumberOfFrames);
+	QObject::connect(audioDecoder, &AudioDecoder::framesDecoded, this, &MediaEngine::startAudioRendering);
+	audioDecoder->start();
+}
+
+void MediaEngine::saveSegment() // for testing
+{
+	int i = 1;
+	for each (ISegment* segment in audioSegmentBuffer)
+	{
+		ofstream file;
+		string extension = ".mpa";
+		string fileName = "audioo" + to_string(i);
+		fileName = fileName + extension;
+		file.open(fileName, ios::out | ios::binary);
+		size_t len = 32768;
+		uint8_t *p_data = new uint8_t[32768];
+		int ret = 0;
+		do
+		{
+			ret = segment->Read(p_data, len);
+			if (ret > 0)
+			{
+				(&file)->write((char *)p_data, ret);
+			}
+		} while (ret > 0);
+		file.close();
+		i++;
+	}
 }

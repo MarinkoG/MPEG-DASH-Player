@@ -83,7 +83,7 @@ void SegmentFactory::findSegmentFolderPath()
 
 deque<ISegment*> SegmentFactory::getSegments()
 {
-	return segments;
+	return videoSegments;
 }
 
 deque<ISegment*> SegmentFactory::createSegments(int bandwidth, long currentSegmentNumber)
@@ -93,7 +93,15 @@ deque<ISegment*> SegmentFactory::createSegments(int bandwidth, long currentSegme
 
 	if (representation->GetBaseURLs().size() > 0) // if representation has baseUrl there is only 1 segment
 	{
-		segments.push_back(representation->GetBaseURLs().at(0)->ToMediaSegment(baseUrls));
+		videoSegments.push_back(representation->GetBaseURLs().at(0)->ToMediaSegment(baseUrls));
 	}
-	return segments;
+	return videoSegments;
+}
+
+deque<ISegment*>  SegmentFactory::createAudioSegments()
+{
+	baseUrls.push_back(mpd->GetMPDPathBaseUrl());
+	IRepresentation *audioRepresentation = getAdaptationSet("audio")->GetRepresentation().at(0);
+	audioSegments.push_back(audioRepresentation->GetBaseURLs().at(0)->ToMediaSegment(baseUrls));
+	return audioSegments;
 }

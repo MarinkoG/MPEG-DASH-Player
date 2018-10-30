@@ -18,6 +18,7 @@ public:
 	~SegmentFactory();
 	deque<ISegment*> getSegments();
 	deque<ISegment*> createSegments(int bandwidth, long currentSegmentNumber = -1);
+	deque<ISegment*> createAudioSegments();
 	
 private:
 	IMPD* mpd;
@@ -28,5 +29,7 @@ private:
 	IAdaptationSet *getAdaptationSet(string type);
 	void findSegmentFolderPath();
 	vector <IBaseUrl*> baseUrls;
-	deque<ISegment*> segments;
+	deque<ISegment*> videoSegments;
+	deque<ISegment*> audioSegments;
+
 };

@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" minBufferTime="PT1.5S" type="static" mediaPresentationDuration="PT1H26M" profiles="urn:mpeg:dash:profile:isoff-live:2011">
+ <BaseURL>http://www-itec.uni-klu.ac.at/ftp/datasets/mmsys13/</BaseURL>
+ <BaseURL>http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/mmsys13/</BaseURL>
+ <BaseURL>http://dbq.multimediatech.cz/mmsys13/</BaseURL>
+ <Period duration="PT1H26M">
+  <AdaptationSet contentType="RedBull 320x240" segmentAlignment="true" group="1" mimeType="video/mp4">
+   <Representation id="1" mimeType="video/mp4" codecs="avc1.42c00d" width="320" height="240" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="101355">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/100kbps/redbull_240p_100kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/100kbps/redbull_240p_100kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+   <Representation id="2" mimeType="video/mp4" codecs="avc1.42c00d" width="320" height="240" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="150705">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/150kbps/redbull_240p_150kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/150kbps/redbull_240p_150kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+  </AdaptationSet>
+  <AdaptationSet contentType="RedBull 480x360" segmentAlignment="true" group="1" mimeType="video/mp4">
+   <Representation id="3" mimeType="video/mp4" codecs="avc1.42c01e" width="480" height="360" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="201237">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/200kbps/redbull_360p_200kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/200kbps/redbull_360p_200kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+   <Representation id="4" mimeType="video/mp4" codecs="avc1.42c01e" width="480" height="360" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="251164">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/250kbps/redbull_360p_250kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/250kbps/redbull_360p_250kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+   <Representation id="5" mimeType="video/mp4" codecs="avc1.42c01e" width="480" height="360" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="300795">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/300kbps/redbull_360p_300kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/300kbps/redbull_360p_300kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+   <Representation id="6" mimeType="video/mp4" codecs="avc1.42c01e" width="480" height="360" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="398038">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/400kbps/redbull_360p_400kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/400kbps/redbull_360p_400kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+  </AdaptationSet>
+  <AdaptationSet contentType="RedBull 853x480" segmentAlignment="true" group="1" mimeType="video/mp4">
+   <Representation id="7" mimeType="video/mp4" codecs="avc1.42c01f" width="853" height="480" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="500714">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/500kbps/redbull_480p_500kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/500kbps/redbull_2sec_set2_init.mp4"/>
+   </Representation>
+   <Representation id="8" mimeType="video/mp4" codecs="avc1.42c01f" width="853" height="480" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="700051">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/700kbps/redbull_480p_700kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/700kbps/redbull_2sec_set2_init.mp4"/>
+   </Representation>
+   <Representation id="9" mimeType="video/mp4" codecs="avc1.42c01f" width="853" height="480" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="896385">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/900kbps/redbull_480p_900kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/900kbps/redbull_2sec_set2_init.mp4"/>
+   </Representation>
+   <Representation id="10" mimeType="video/mp4" codecs="avc1.42c01f" width="853" height="480" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="1179845">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/1200kbps/redbull_480p_1200kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/1200kbps/redbull_2sec_set2_init.mp4"/>
+   </Representation>
+  </AdaptationSet>
+  <AdaptationSet contentType="RedBull 1280x720" segmentAlignment="true" group="1" mimeType="video/mp4">
+   <Representation id="11" mimeType="video/mp4" codecs="avc1.42c01f" width="1280" height="720" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="1498609">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/1500kbps/redbull_720p_1500kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/1500kbps/redbull_720p_1500kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+   <Representation id="12" mimeType="video/mp4" codecs="avc1.42c01f" width="1280" height="720" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="1993730">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/2000kbps/redbull_720p_2000kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/2000kbps/redbull_720p_2000kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+   <Representation id="13" mimeType="video/mp4" codecs="avc1.42c01f" width="1280" height="720" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="2475387">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/2500kbps/redbull_720p_2500kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/2500kbps/redbull_720p_2500kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+  </AdaptationSet>
+  <AdaptationSet contentType="RedBull 1920x1080" segmentAlignment="true" group="1" mimeType="video/mp4">
+   <Representation id="14" mimeType="video/mp4" codecs="avc1.42c032" width="1920" height="1080" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="2995671">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/3000kbps/redbull_1080p_3000kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/3000kbps/redbull_1080p_3000kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+   <Representation id="15" mimeType="video/mp4" codecs="avc1.42c032" width="1920" height="1080" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="3992758">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/4000kbps/redbull_1080p_4000kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/4000kbps/redbull_1080p_4000kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+   <Representation id="16" mimeType="video/mp4" codecs="avc1.42c032" width="1920" height="1080" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="4981983">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/5000kbps/redbull_1080p_5000kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/5000kbps/redbull_1080p_5000kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+   <Representation id="17" mimeType="video/mp4" codecs="avc1.42c032" width="1920" height="1080" frameRate="30000/1001" sar="1:1" startWithSAP="1" bandwidth="5942702">
+    <SegmentTemplate timescale="1000" duration="2001" media="video/redbull_2sec/6000kbps/redbull_1080p_6000kbps_2sec_segment$Number$.m4s" startNumber="3" initialization="video/redbull_2sec/6000kbps/redbull_1080p_6000kbps_2sec_segmentinit.mp4"/>
+   </Representation>
+  </AdaptationSet>
+ </Period>
+</MPD>

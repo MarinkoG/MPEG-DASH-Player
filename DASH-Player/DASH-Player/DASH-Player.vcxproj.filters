@@ -50,15 +50,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_DownloadObserver.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="SegmentDecoder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_SegmentDecoder.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_SegmentDecoder.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="VideoRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,6 +60,45 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="MPDParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_Decoder.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_Decoder.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Decoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoDecoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_VideoDecoder.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_VideoDecoder.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioDecoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AudioDecoder.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AudioDecoder.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AudioRenderer.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AudioRenderer.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -118,10 +148,19 @@
     <CustomBuild Include="DownloadObserver.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="SegmentDecoder.h">
+    <CustomBuild Include="VideoRenderer.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="VideoRenderer.h">
+    <CustomBuild Include="Decoder.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="VideoDecoder.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AudioDecoder.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AudioRenderer.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -139,6 +178,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MPDParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSample.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,12 +9,14 @@
 #include <deque>
 #include "SegmentFactory.h"
 #include "SegmentDownloader.h"
-#include "SegmentDecoder.h"
+#include "VideoDecoder.h"
 #include <fstream>
 #include <iostream>
 #include <QMutex>
 #include <QImage>
 #include "VideoRenderer.h"
+#include "AudioDecoder.h"
+#include "AudioRenderer.h"
 
 using namespace	std;
 using namespace dash::mpd;
@@ -31,29 +33,32 @@ public:
 	bool start();
 	bool createSegments(long currentSegmentNumber);
 	void downloadSegments();
-	void decodeSegments();
-	void renderVideo();
+	void decodeVideoSegments();
+	void renderVideo(double framerate);
 	static void print(string string);
 	void adjustPlayerSize();
 	void setRepresentation(IRepresentation *representation);
 	void setBandwidth(int bandwidth);
 	void setVideoQuality(QString videoQuality);
 	void showLoadingScreen();
+	void decodeAudioSegments();
+
+	void saveSegment();
 
 private:
 	Frame *video;
 	IMPD *mpd;
-	deque<ISegment*> segments;
-	deque<ISegment*> segmentBuffer;
+	deque<ISegment*> videoSegments;
+	deque<ISegment*> videoSegmentBuffer;
 	SegmentFactory *segmentFactory;
 	SegmentDownloader *segmentDownloader;
-	SegmentDecoder *segmentDecoder;
+	VideoDecoder *videoDecoder;
 	deque<QImage*> frameBuffer;
 	QMutex frameBufferMutex;
 	QWaitCondition frameBufferNotEmpty;
 	QWaitCondition frameBufferNotFull;
-	QMutex segmentBufferMutex;
-	QWaitCondition segmentBufferNotEmpty;
+	QMutex videoSegmentBufferMutex;
+	QWaitCondition videoSegmentBufferNotEmpty;
 	long currentSegmentNumber;
 	bool decodingStarted = false;
 	bool renderingStarted = false;
@@ -64,9 +69,27 @@ private:
 	int width = 0;
 	int height = 0;
 
+	deque<ISegment*> audioSegments;
+	deque<ISegment*> audioSegmentBuffer;
+	SegmentDownloader *audioSegmentDownloader;
+	QMutex audioSegmentBufferMutex;
+	QWaitCondition audioSegmentBufferNotEmpty;
+
+	AudioDecoder *audioDecoder;
+	deque<AudioSample*> audioSampleBuffer;
+	QMutex audioSampleBufferMutex;
+	QWaitCondition audioSampleBufferNotEmpty;
+	QWaitCondition audioSampleBufferNotFull;
+
+	AudioRenderer *audioRenderer;
+
+	
+	
+
 public slots:
 	void startDecoding();
-	void startRendering();
+	void startRendering(double framerate);
+	void startAudioRendering(QAudioFormat *format);
 	void saveNumberOfFrames(long numberOfFrames);
 
 };
