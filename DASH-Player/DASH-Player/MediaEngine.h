@@ -51,7 +51,7 @@ private:
 	deque<ISegment*> videoSegments;
 	deque<ISegment*> videoSegmentBuffer;
 	SegmentFactory *segmentFactory;
-	SegmentDownloader *segmentDownloader;
+	SegmentDownloader *videoSegmentDownloader;
 	VideoDecoder *videoDecoder;
 	deque<QImage*> frameBuffer;
 	QMutex frameBufferMutex;
@@ -60,7 +60,7 @@ private:
 	QMutex videoSegmentBufferMutex;
 	QWaitCondition videoSegmentBufferNotEmpty;
 	long currentSegmentNumber;
-	bool decodingStarted = false;
+	bool videoDecodingStarted = false;
 	bool renderingStarted = false;
 	vector<long> segmentFrameNumbers;
 	VideoRenderer *videoRenderer;
@@ -69,9 +69,11 @@ private:
 	int width = 0;
 	int height = 0;
 
+
+
+	SegmentDownloader *audioSegmentDownloader;
 	deque<ISegment*> audioSegments;
 	deque<ISegment*> audioSegmentBuffer;
-	SegmentDownloader *audioSegmentDownloader;
 	QMutex audioSegmentBufferMutex;
 	QWaitCondition audioSegmentBufferNotEmpty;
 
@@ -82,6 +84,7 @@ private:
 	QWaitCondition audioSampleBufferNotFull;
 
 	AudioRenderer *audioRenderer;
+	bool audioDecodingStarted = false;
 
 	
 	

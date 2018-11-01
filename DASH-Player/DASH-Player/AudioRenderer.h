@@ -33,7 +33,7 @@ public:
 	long getNumberOfRenderedFrames();
 	void setAudioFormat(QAudioFormat *format);
 
-	void WriteToBuffer(const char * data, qint64 len);
+	void writeToBuffer(const char * data, qint64 len);
 
 private:
 
@@ -47,6 +47,7 @@ private:
 	QAudioOutput        *audioOutput;
 	QAudioDeviceInfo    deviceInfo;
 	QIODevice           *output;
+	QAudioFormat f;
 
 	void    init();
 };

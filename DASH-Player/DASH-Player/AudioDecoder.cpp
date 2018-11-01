@@ -36,14 +36,34 @@ void AudioDecoder::saveToBuffer(AVCodecContext *codecContext, AVFrame *frame)
 		audioSampleBufferNotFull->wait(audioSampleBufferMutex);
 	}
 	audioSampleBufferMutex->unlock();
-	print(" duzina frame " + to_string((sizeof(frame->data[0]) / sizeof(char*))));
-	AudioSample *audioSample = new AudioSample((char*)frame->data[0], frame->linesize[0]);
+	audioSample = new AudioSample();
+	int i,ch;
+	int data_size = av_get_bytes_per_sample(codecContext->sample_fmt);
+	if (data_size < 0) {
+		/* This should not occur, checking just for paranoia */
+		print("Failed to calculate data size\n");
+	}
+
+	audioSample->data = (char*)malloc(frame->linesize[0]);
+	print("linesize[0]= " + to_string(frame->linesize[0]) + "linesize[1]= " + to_string(frame->linesize[1]) + "codecContext->channels= " + to_string(codecContext->channels));
+	//memcpy(audioSample->data, data, this->length);
+	//FILE *outfile = fopen("audioSam.mpa", "a");
+	
+	for (i = 0; i < frame->nb_samples; i++)
+		for (ch = 0; ch < codecContext->channels; ch++)
+			memcpy(audioSample->data+data_size*i, frame->data[ch] + data_size * i, data_size);
+			//fwrite(frame->data[ch] + data_size * i, 1, data_size, outfile);
+
+	//fclose(outfile);
+	//memcpy(audioSample->data, frame->data[ch] + data_size * i, data_size);
+
+	//long size = av_get_bytes_per_sample(codecContext->sample_fmt);
+	//audioSample = new AudioSample((char*)frame->data[0], frame->linesize[0]);
 
 	audioSampleBuffer->push_back(audioSample);
-
-	//print(" decoder-samplerate: " + to_string(frame->sample_rate) + " chanels: " + to_string(frame->channels) + " brojsamplova " + to_string(frame->nb_samples) + " datasize " + to_string(frame->linesize[0]));
+	//print(" decoder-samplerate: " + to_string(frame->sample_rate) + " chanels: " + to_string(frame->channels) + " brojsamplova " + to_string(frame->nb_samples) + " datasize " + to_string(frame->linesize[0]) + " size " + to_string(size));
 	//print(" decoder-duzina: " + to_string(audioSample->getLength()) + " duzina frame " + to_string((sizeof(frame->data[0]) / sizeof(frame->data[0][0]))));
-	msleep(30);
+	//msleep(30);
 	audioSampleBufferMutex->lock();
 	if (audioSampleBuffer->size() == 1)
 	{

@@ -19,6 +19,7 @@ private:
 	QWaitCondition *audioSampleBufferNotEmpty;
 	QWaitCondition *audioSampleBufferNotFull;
 	int audioSampleBufferSize = 4000;
+	AudioSample *audioSample;
 
 signals:
 	void framesDecoded(QAudioFormat *format);

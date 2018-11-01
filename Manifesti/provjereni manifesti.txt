@@ -7,3 +7,5 @@ http://xsvc27-stu.main.xcdn.sda.t-online.de/dash01/dashstream/streaming/jerprovi
 
 
 http://dash.edgesuite.net/envivio/dashpr/clear/Manifest.mpd
+
+http://dash.akamaized.net/dash264/TestCases/1a/netflix/exMPD_BIP_TC1.mpd

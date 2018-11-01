@@ -31,7 +31,7 @@ public:
 	void run() override;
 	virtual void saveToBuffer(AVCodecContext *codecContext, AVFrame *frame);
 	void setMediaType(AVMediaType mediaType);
-
+	long numberOfFrames = 0;
 
 private:
 	size_t bufferSize = 32768;
@@ -41,7 +41,7 @@ private:
 	int width;
 	int height;
 	void decode(AVCodecContext *codecContext, AVFrame *frame, AVPacket *pkt);
-	long numberOfFrames = 0;
+	//long numberOfFrames = 0;
 	int stream = -1;
 	AVMediaType mediaType = AVMEDIA_TYPE_VIDEO;
 

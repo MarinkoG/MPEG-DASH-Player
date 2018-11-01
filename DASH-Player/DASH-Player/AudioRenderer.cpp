@@ -41,8 +41,8 @@ void AudioRenderer::run()
 		audioSampleBuffer->pop_front();
 		//print(" Renderer-samplerate: "+ to_string(audioSample->sample_rate) + " chanels: " + to_string(audioSample->channels) + " brojsamplova " + to_string(audioSample->nb_samples));
 		//print(" Renderer-length: " + to_string(audioSample->getLength()));
-		WriteToBuffer(audioSample->getData(), audioSample->getLength());
-		//msleep(1000/25);
+		writeToBuffer(audioSample->getData(), audioSample->getLength());
+		msleep(1000/25);
 
 		
 		audioSampleBufferMutex->lock();
@@ -59,7 +59,7 @@ void AudioRenderer::setAudioFormat(QAudioFormat *format)
 	this->format = format;
 }
 
-void AudioRenderer::WriteToBuffer(const char *data, qint64 len)
+void AudioRenderer::writeToBuffer(const char *data, qint64 len)
 {
 	while (len > 0)
 	{
@@ -73,7 +73,6 @@ void AudioRenderer::WriteToBuffer(const char *data, qint64 len)
 void AudioRenderer::init()
 {
 	deviceInfo = QAudioDeviceInfo(QAudioDeviceInfo::defaultOutputDevice());
-	QAudioFormat f;
 	f.setSampleRate(48000);
 	f.setChannelCount(2);
 	f.setSampleSize(16);

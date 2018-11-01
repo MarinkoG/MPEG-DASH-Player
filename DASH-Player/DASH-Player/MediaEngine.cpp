@@ -39,12 +39,9 @@ bool MediaEngine::start()
 bool MediaEngine::createSegments(long currentSegmentNumber)
 {
 
-	/*
 	segmentFactory = new SegmentFactory(mpd);
 	videoSegments = segmentFactory->createSegments(bandwidth, currentSegmentNumber);
-	return true;
 
-	*/
 
 
 	segmentFactory = new SegmentFactory(mpd);
@@ -54,17 +51,13 @@ bool MediaEngine::createSegments(long currentSegmentNumber)
 
 void MediaEngine::downloadSegments()
 {
-	/*
-	segmentDownloader = new SegmentDownloader(&videoSegments, &videoSegmentBuffer,&videoSegmentBufferMutex,&videoSegmentBufferNotEmpty);
-	QObject::connect(segmentDownloader, &SegmentDownloader::segmentDownloaded, this, &MediaEngine::startDecoding);
-	segmentDownloader->start();
-	*/
+	videoSegmentDownloader = new SegmentDownloader(&videoSegments, &videoSegmentBuffer,&videoSegmentBufferMutex,&videoSegmentBufferNotEmpty);
+	QObject::connect(videoSegmentDownloader, &SegmentDownloader::segmentDownloaded, this, &MediaEngine::startDecoding);
+	videoSegmentDownloader->start();
 
-
-
-	segmentDownloader = new SegmentDownloader(&audioSegments, &audioSegmentBuffer, &audioSegmentBufferMutex, &audioSegmentBufferNotEmpty);
-	QObject::connect(segmentDownloader, &SegmentDownloader::segmentDownloaded, this, &MediaEngine::startDecoding);
-	segmentDownloader->start();
+	audioSegmentDownloader = new SegmentDownloader(&audioSegments, &audioSegmentBuffer, &audioSegmentBufferMutex, &audioSegmentBufferNotEmpty);
+	QObject::connect(audioSegmentDownloader, &SegmentDownloader::segmentDownloaded, this, &MediaEngine::startDecoding);
+	audioSegmentDownloader->start();
 
 }
 
@@ -95,28 +88,27 @@ void MediaEngine::print(string string) // for testing
 void MediaEngine::startDecoding()
 {
 	//saveSegment();
-
 	
-	if (!decodingStarted)
+	if (!videoDecodingStarted)
 	{
-		//decodeVideoSegments();
-		decodeAudioSegments();
-		decodingStarted = true;
+		decodeVideoSegments();
+		videoDecodingStarted = true;
 	}
-	
 
+	if (!audioDecodingStarted)
+	{
+		decodeAudioSegments();
+		audioDecodingStarted = true;
+	}
 }
 
 void MediaEngine::startRendering(double framerate)
 {
-	print("broj  samplova po kanalu u framu" + to_string(framerate));
-	/**
 	if (!renderingStarted)
 	{
 		renderVideo(framerate);
 		renderingStarted = true;
 	}
-	*/
 }
 
 void MediaEngine::startAudioRendering(QAudioFormat *format)
@@ -124,12 +116,10 @@ void MediaEngine::startAudioRendering(QAudioFormat *format)
 	audioRenderer = new AudioRenderer(&audioSampleBuffer, &audioSampleBufferMutex, &audioSampleBufferNotEmpty, &audioSampleBufferNotFull);
 	audioRenderer->setAudioFormat(format);
 	audioRenderer->start();
-
 }
 
 void MediaEngine::saveNumberOfFrames(long numberOfFrames)
 {
-	print("broj samplova " + to_string(numberOfFrames));
 	segmentFrameNumbers.push_back(numberOfFrames);
 }
 

@@ -76,9 +76,7 @@ void Decoder::run()
 
 		segment = *segmentBuffer->begin();
 		segmentBuffer->pop_front();
-		//print("segment range " + ((IChunk*) segment)->Range());
 
-		print("segment range " + to_string(((IChunk*)segment)->HasByteRange()));
 		formatContext = avformat_alloc_context();
 		ioBuffer = (uint8_t*)av_malloc(bufferSize);
 		inputContext = avio_alloc_context(ioBuffer, bufferSize, 0, segment, &read, NULL, NULL);
@@ -114,7 +112,7 @@ void Decoder::run()
 			print("Could not open codec");
 			return;
 		}
-
+		int *got_frame;
 		packet = av_packet_alloc();
 		av_init_packet(packet);
 
@@ -125,7 +123,8 @@ void Decoder::run()
 		}
 		while (av_read_frame(formatContext, packet) >= 0)
 		{
-			decode(codecContext, frame, packet);
+			//decode(codecContext, frame, packet);
+			avcodec_decode_audio4(codecContext, frame, got_frame, packet);
 			av_packet_unref(packet);
 		}
 		av_packet_free(&packet);
