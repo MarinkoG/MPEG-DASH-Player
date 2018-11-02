@@ -4,7 +4,7 @@
 static void print(string string) // for testing
 {
 	ofstream myfile;
-	myfile.open("Log.txt", ios::app);
+	myfile.open("renderLog.txt", ios::app);
 	myfile << string << endl;
 	myfile.close();
 }
@@ -27,6 +27,7 @@ AudioRenderer::~AudioRenderer()
 void AudioRenderer::run()
 {
 	init();
+	int k = 0;
 	AudioSample *audioSample;
 	forever
 	{
@@ -38,19 +39,25 @@ void AudioRenderer::run()
 		audioSampleBufferMutex->unlock();
 
 		audioSample = *audioSampleBuffer->begin();
-		audioSampleBuffer->pop_front();
-		//print(" Renderer-samplerate: "+ to_string(audioSample->sample_rate) + " chanels: " + to_string(audioSample->channels) + " brojsamplova " + to_string(audioSample->nb_samples));
-		//print(" Renderer-length: " + to_string(audioSample->getLength()));
+		
+		if (++k<5) {
+			for (size_t i = 0; i < audioSample->getLength(); i++)
+			{
+				print("frame: " + to_string(k) + " [" + to_string(audioSample->getData()[i]));
+			}
+		}
 		writeToBuffer(audioSample->getData(), audioSample->getLength());
 		msleep(1000/25);
 
-		
+		audioSampleBuffer->pop_front();
 		audioSampleBufferMutex->lock();
 		if (audioSampleBuffer->size() < audioSampleBufferSize)
 		{
 			audioSampleBufferNotFull->wakeAll();
 		}
 		audioSampleBufferMutex->unlock();
+
+		delete audioSample;
 	}
 }
 
@@ -63,7 +70,7 @@ void AudioRenderer::writeToBuffer(const char *data, qint64 len)
 {
 	while (len > 0)
 	{
-		qint64 written = output->write(data, len);
+		qint64 written = this->output->write(data, len);
 		len -= written;
 		data += written;
 	}
@@ -79,13 +86,13 @@ void AudioRenderer::init()
 	f.setCodec("audio/pcm");
 	f.setByteOrder(QAudioFormat::LittleEndian);
 	f.setSampleType(QAudioFormat::SignedInt);
-
+/*
 	if (!deviceInfo.isFormatSupported(f))
 	{
 		f = deviceInfo.nearestFormat(f);
 	}
-
-	audioOutput = new QAudioOutput(deviceInfo, f);
+	*/
+	audioOutput = new QAudioOutput(deviceInfo, f, NULL);
 	/*
 	qreal linearVolume = QAudio::convertVolume(75 / qreal(100),
 		QAudio::LogarithmicVolumeScale,
@@ -94,6 +101,6 @@ void AudioRenderer::init()
 	audioOutput->setVolume(linearVolume);
 
 	*/
-	output = audioOutput->start();
+	this->output = audioOutput->start();
 }
 

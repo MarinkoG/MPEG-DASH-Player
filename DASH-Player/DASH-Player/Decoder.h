@@ -28,6 +28,7 @@ class Decoder : public QThread
 public:
 	Decoder(deque<ISegment*> *segmentBuffer, QMutex *segmentBufferMutex, QWaitCondition *segmentBufferNotEmpty);
 	~Decoder();
+	void print(string string);
 	void run() override;
 	virtual void saveToBuffer(AVCodecContext *codecContext, AVFrame *frame);
 	void setMediaType(AVMediaType mediaType);

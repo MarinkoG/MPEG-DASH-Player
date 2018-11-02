@@ -14,10 +14,10 @@ Decoder::~Decoder()
 }
 
 
-static void print(string string) // for testing
+void Decoder::print(string string) // for testing
 {
 	ofstream myfile;
-	myfile.open("Log.txt", ios::app);
+	myfile.open("decoderLog.txt", ios::app);
 	myfile << string << endl;
 	myfile.close();
 }
@@ -55,6 +55,7 @@ void Decoder::decode(AVCodecContext *codecContext, AVFrame *frame, AVPacket *pkt
 
 void Decoder::run()
 {
+	av_register_all();
 	QString result;
 	AVFormatContext *formatContext = NULL;
 	uint8_t *ioBuffer = NULL;
@@ -112,7 +113,7 @@ void Decoder::run()
 			print("Could not open codec");
 			return;
 		}
-		int *got_frame;
+		int got_frame = 1;
 		packet = av_packet_alloc();
 		av_init_packet(packet);
 
@@ -124,11 +125,15 @@ void Decoder::run()
 		while (av_read_frame(formatContext, packet) >= 0)
 		{
 			//decode(codecContext, frame, packet);
-			avcodec_decode_audio4(codecContext, frame, got_frame, packet);
-			av_packet_unref(packet);
+			//av_packet_unref(packet);
+			avcodec_decode_audio4(codecContext, frame, &got_frame, packet);
+			if (got_frame)
+			{
+				saveToBuffer(codecContext, frame);
+			}
 		}
 		av_packet_free(&packet);
-		decode(codecContext, frame, NULL);
+		//decode(codecContext, frame, NULL);
 		emit segmentDecoded(numberOfFrames);
 
 		av_frame_free(&frame);

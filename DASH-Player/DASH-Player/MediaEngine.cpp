@@ -51,10 +51,11 @@ bool MediaEngine::createSegments(long currentSegmentNumber)
 
 void MediaEngine::downloadSegments()
 {
+	/*
 	videoSegmentDownloader = new SegmentDownloader(&videoSegments, &videoSegmentBuffer,&videoSegmentBufferMutex,&videoSegmentBufferNotEmpty);
 	QObject::connect(videoSegmentDownloader, &SegmentDownloader::segmentDownloaded, this, &MediaEngine::startDecoding);
 	videoSegmentDownloader->start();
-
+	*/
 	audioSegmentDownloader = new SegmentDownloader(&audioSegments, &audioSegmentBuffer, &audioSegmentBufferMutex, &audioSegmentBufferNotEmpty);
 	QObject::connect(audioSegmentDownloader, &SegmentDownloader::segmentDownloaded, this, &MediaEngine::startDecoding);
 	audioSegmentDownloader->start();
@@ -88,12 +89,12 @@ void MediaEngine::print(string string) // for testing
 void MediaEngine::startDecoding()
 {
 	//saveSegment();
-	
+	/*
 	if (!videoDecodingStarted)
 	{
 		decodeVideoSegments();
 		videoDecodingStarted = true;
-	}
+	}*/
 
 	if (!audioDecodingStarted)
 	{

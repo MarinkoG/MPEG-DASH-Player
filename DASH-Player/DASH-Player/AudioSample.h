@@ -10,7 +10,7 @@ public:
 	long getLength();
 
 	char *data;
-	long length = 8192;
+	long length = 0;
 private:
 	/*
 	char *data;

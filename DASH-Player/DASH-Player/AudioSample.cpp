@@ -5,11 +5,10 @@ AudioSample::AudioSample()
 }
 
 AudioSample::AudioSample(char * data, long length):
-	data(data),
 	length(length)
 {
-	//this->data = (char*)malloc(this->length);
-	//memcpy(this->data, data, this->length);
+	this->data = (char*)malloc(this->length);
+	memcpy(this->data, data, this->length);
 }
 
 AudioSample::~AudioSample()

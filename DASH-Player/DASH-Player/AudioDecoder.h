@@ -11,6 +11,7 @@ class AudioDecoder : public Decoder
 public:
 	AudioDecoder(deque<ISegment*> *segmentBuffer, QMutex *segmentBufferMutex, QWaitCondition *segmentBufferNotEmpty, deque<AudioSample*> *audioSampleBuffer, QMutex *audioSampleBufferMutex, QWaitCondition *audioSampleBufferNotEmpty, QWaitCondition *audioSampleBufferNotFull);
 	~AudioDecoder();
+	void upis(const uint8_t ** data, long l);
 	void saveToBuffer(AVCodecContext *codecContext, AVFrame *frame)override;
 
 private:
